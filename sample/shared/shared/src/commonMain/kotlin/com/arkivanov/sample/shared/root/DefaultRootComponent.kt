@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.router.stack.webhistory.WebHistoryController
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
@@ -58,19 +59,19 @@ class DefaultRootComponent(
         }
 
     override fun onCountersTabClicked() {
-        navigation.bringToFront(Config.Counters)
+        navigation.replaceCurrent(Config.Counters)
     }
 
     override fun onMultiPaneTabClicked() {
-        navigation.bringToFront(Config.MultiPane)
+        navigation.replaceCurrent(Config.MultiPane)
     }
 
     override fun onDynamicFeaturesTabClicked() {
-        navigation.bringToFront(Config.DynamicFeatures)
+        navigation.replaceCurrent(Config.DynamicFeatures)
     }
 
     override fun onCustomNavigationTabClicked() {
-        navigation.bringToFront(Config.CustomNavigation)
+        navigation.replaceCurrent(Config.CustomNavigation)
     }
 
     private companion object {

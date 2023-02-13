@@ -28,6 +28,7 @@ android {
 }
 
 kotlin {
+    jvm()
     targets
         .filterIsInstance<KotlinNativeTarget>()
         .filter { it.konanTarget.family == Family.IOS }
@@ -61,6 +62,7 @@ kotlin {
             api(deps.essenty.lifecycle)
             api(deps.essenty.stateKeeper)
             implementation(deps.reaktive.reaktive)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         }
 
 
@@ -77,6 +79,7 @@ kotlin {
         nonAndroid.main.dependencies {
             implementation(project(":sample:shared:dynamic-features:feature1Impl"))
             implementation(project(":sample:shared:dynamic-features:feature2Impl"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         }
 
         js.main.dependencies {

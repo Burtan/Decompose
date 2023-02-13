@@ -12,6 +12,9 @@ import com.arkivanov.decompose.value.operator.map
 import com.arkivanov.decompose.value.reduce
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.instancekeeper.getOrCreate
+import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.LifecycleOwner
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.consume
@@ -22,6 +25,12 @@ import com.badoo.reaktive.disposable.scope.DisposableScope
 import com.badoo.reaktive.observable.observableInterval
 import com.badoo.reaktive.scheduler.Scheduler
 import com.badoo.reaktive.scheduler.mainScheduler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 internal class DefaultCounterComponent(
     componentContext: ComponentContext,
@@ -32,6 +41,7 @@ internal class DefaultCounterComponent(
     tickScheduler: Scheduler = mainScheduler,
 ) : CounterComponent, ComponentContext by componentContext {
 
+    private val scope = coroutineScope(Dispatchers.Default)
     private val handler =
         instanceKeeper.getOrCreate(KEY_STATE) {
             Handler(
@@ -65,6 +75,32 @@ internal class DefaultCounterComponent(
     }
 
     init {
+        scope.launch {
+            while (true) {
+                println("I wont get cancelled")
+                delay(10)
+            }
+        }
+        lifecycle.subscribe(object : Lifecycle.Callbacks {
+            override fun onCreate() {
+                println("onCreate")
+            }
+            override fun onDestroy() {
+                println("onDestroy")
+            }
+            override fun onPause() {
+                println("onPause")
+            }
+            override fun onResume() {
+                println("onResume")
+            }
+            override fun onStart() {
+                println("onStart")
+            }
+            override fun onStop() {
+                println("onStop")
+            }
+        })
         stateKeeper.register(KEY_STATE) { handler.state.value }
     }
 
@@ -116,4 +152,11 @@ internal class DefaultCounterComponent(
             dispose()
         }
     }
+}
+
+fun LifecycleOwner.coroutineScope(context: CoroutineContext): CoroutineScope {
+    val scope = CoroutineScope(context)
+    lifecycle.doOnDestroy(scope::cancel)
+
+    return scope
 }
